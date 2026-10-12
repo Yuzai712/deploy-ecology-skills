@@ -1,8 +1,13 @@
 # 订单台账 · 全量基线样例清单（纯虚构示例，只演示格式）
 # 全量迁移的唯一打包依据：本清单逐行 == 项目全部部署物。
 # 首次注册项目时按"部署物构成"逐类清点生成草稿，逐行 review 定稿；
-# 此后每轮增量把新增文件并入本清单（仅覆盖旧文件的不动）。
-# 源根（示例）：D:\DemoRepo\out\production\OrderModule
+# 此后每轮增量把新增文件并入本清单（仅覆盖既有文件的不动）。
+#
+# 清单头部固定三字段（实际清单照此形态写，缺一不可）：
+#   源根：D:\DemoRepo\out\production\OrderModule
+#         （来源分散时改写为：源根 = 暂存目录；并注明各类文件的真实来源）
+#   变更摘要：首次定稿（此后写本次相对上版基线增/删了什么）
+#   覆盖既有：无（服务器上已有、安装时整体替换的目标路径则逐条列出；确认门按它复述）
 
 # —— classbean：类（含内嵌类）+ 随包加载的 properties ——
 com/engine/demo/order/cmd/OrderBoardCmd.class	=>	classbean/com/engine/demo/order/cmd/OrderBoardCmd.class

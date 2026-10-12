@@ -15,7 +15,7 @@ deploy-kit\README.txt                              工具包中文使用说明�
 deploy-kit\maps\*.map                              部署清单：2 份虚构样例（订单台账）+ 你的项目清单写这里
 ```
 
-术语（清单、基线清单、输出目录、随包文件、可证部署、演练等）见 [GLOSSARY.md](GLOSSARY.md)。
+术语（清单、基线清单、输出目录、随包文件、可证部署、假根演练等）见 [GLOSSARY.md](GLOSSARY.md)。
 
 ## 安装（3 步）
 
@@ -29,15 +29,16 @@ deploy-kit\maps\*.map                              部署清单：2 份虚构样
 
 ## 输出目录规则
 
-打包产物一律输出到**项目预先指定的输出目录**（约定默认 `<项目工作区>\deploy\`）：
-`deploy-ecology-full` 的项目档案为每个项目登记「输出目录」；打包脚本省略 `-OutDir`
-时默认落到工具包上一级的 `deploy\`；演练，或项目档案登记了其他输出目录时，才显式传 `-OutDir`。
+打包产物最终一律留档到**项目预先指定的输出目录**（约定默认 `<项目工作区>\deploy\`）：
+`deploy-ecology-full` 的项目档案为每个项目登记「输出目录」。技能流程显式传 `-OutDir`
+先把包落到纯 ASCII 演练目录（规避中文路径的编码风险；全量流程在此完成假根演练），
+通过后把 zip 拷回输出目录；打包脚本省略 `-OutDir` 时默认落到工具包上一级的 `deploy\`。
 
 ## 使用前提
 
 - Windows + PowerShell 5.1（打包）；`certutil`（SHA256 校验，系统自带）。
 - 增量 skill 的编译步骤默认用 IDEA MCP `build_project`（仅 class 变更时需要）；
-  没有 IDEA MCP 时替换为你们自己的编译方式，完成标准不变（编译成功且无问题）。
+  没有 IDEA MCP 时替换为你们自己的编译方式，完成标准不变（编译成功、问题清单为空）。
 - 不依赖任何外部知识库，skill 自包含可独立运行。
 
 ## 安全红线（务必读）
@@ -46,14 +47,15 @@ deploy-kit\maps\*.map                              部署清单：2 份虚构样
 - 内嵌类 `Xxx$Inner.class` 与 `.properties` 是最易漏的两类，存在即必列。
 - **install.bat 默认目录分支（D:\WEAVER\ecology）在装有真实 ecology 的机器上会写进真实
   安装**（历史上发生过误写事故）。对本机测试环境部署时显式传 ecology 根；
-  演练/实验一律用 %TEMP% 假根。
+  演练/实验一律用纯 ASCII 目录（如 `C:\Temp\`）下的假根。
 - 仅 JSP/静态变更免编译免重启；class 变更必须重启 ecology（Jersey 只在 webapp 启动时
   扫 `com.cloudstore;com.api` 包，不重启 = 新接口永远 404）。
 - 正式环境安装前 skill 会走确认门：核对服务器根目录、文件数、备份目录、会话清空四要素。
 
 ## 建议的首跑方式
 
-不要直接上真实环境：按 SKILL.md 红线用 %TEMP% 假源根 + 假 ecology 根做一次全流程演练
-（出包 → install.bat <假根> → /verify），确认备份/替换/校验/退出码行为符合预期后再实战。
+不要直接上真实环境：按 SKILL.md（全量步骤 4；增量「假根演练」节）在纯 ASCII 目录用假源根
++ 假 ecology 根做一次假根演练（出包 → install.bat <假根> → /verify → 篡改一个文件后
+/verify 应退出码 1），确认备份/替换/校验/退出码行为符合预期后再实战。
 `maps\` 下的两份虚构样例（订单台账）可作格式参考；全量 skill 的项目基线清单
 （`<项目>-full-baseline.map`）需在首次全量部署时按项目实际部署物生成定稿。

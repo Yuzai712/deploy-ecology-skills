@@ -1,6 +1,13 @@
 # 订单台账 · 增量包样例清单（纯虚构示例，只演示格式）
+#
+# 清单头部固定三字段（实际清单照此形态写，缺一不可）：
+#   源根：D:\DemoRepo\out\production\OrderModule
+#         （来源分散时改写为：源根 = 暂存目录；并注明各类文件的真实来源）
+#   变更摘要：<一句话，逐条列本轮改了什么>
+#   覆盖既有：classbean/com/web/config/order-config.properties
+#         （服务器上已有、本次要整体替换的目标路径，逗号分隔；无则写"无"；安装先自动备份）
+#
 # 格式：源文件相对路径(相对源根) => 压缩包内路径(相对 files/，即 ecology 根下相对路径)
-# 源根（示例）：D:\DemoRepo\out\production\OrderModule
 # 映射规则：
 #   源根下 com/xxx     -> 包内 classbean/com/xxx
 #   源根下 mobile/xxx  -> 包内 mobile/xxx
