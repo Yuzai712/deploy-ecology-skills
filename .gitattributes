@@ -1,0 +1,13 @@
+# 行尾策略：仓库内统一存 LF，检出时按文件类型落地。
+# 注意：匹配靠后的规则生效，所以通用规则写在最前，特例写在后面。
+
+* text=auto eol=lf
+
+# install.bat 必须 CRLF：LF 行尾会让 cmd 解析异常，表现为双击窗口一闪而过
+# （见 deploy-kit\README.txt 常见问题 Q1）。这里显式钉死，免得下游用户的
+# core.autocrlf 配置不同就把包做成坏的。
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# 随包发给服务器的使用说明：用 CRLF，兼容旧版记事本（LF 会显示成一整行）。
+deploy-kit/README.txt text eol=crlf

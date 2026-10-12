@@ -148,6 +148,9 @@ if ($entries.Count -eq 0) {
     exit 1
 }
 
+# 解压提示文件名（打包时在 zip 根目录生成，阻止用户在压缩包内直接双击 install.bat）
+$noticeFileName = '禁止直接在压缩包中运行install.bat-请先解压.txt'
+
 # ---------- 暂存目录 ----------
 if (-not (Test-Path -LiteralPath $OutDir)) {
     New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
@@ -194,21 +197,42 @@ try {
     [System.IO.File]::WriteAllBytes((Join-Path $stage 'install.bat'), $latin1.GetBytes($batText))
     Copy-Item -LiteralPath $readmeTxt -Destination (Join-Path $stage 'README.txt') -Force
 
-    # ---------- 打 zip（ZipFile.CreateFromDirectory 保留目录结构） ----------
+    # ---------- 生成"禁止在压缩包内直接运行"的解压提示空文件 ----------
+    # 0 字节，仅借文件名提示用户必须先解压再使用。写为 UTF-8 文件名（zip 置 UTF-8 flag），
+    # Windows 资源管理器与主流解压软件均可正确显示中文名。
+    $noticePath = Join-Path $stage $noticeFileName
+    [System.IO.File]::WriteAllBytes($noticePath, [byte[]]@())
+
+    # ---------- 打 zip（逐条目写入，强制中文文件名以 UTF-8 存储） ----------
+    # ZipFile.CreateFromDirectory 对非 ASCII 文件名按系统 ANSI 写条目名，
+    # 跨机器解压会乱码。改为手动 CreateEntry，.NET 对非 ASCII 自动置 UTF-8 flag。
+    Add-Type -AssemblyName System.IO.Compression
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     $zipPath = Join-Path $outDirFull ('{0}-{1}.zip' -f $Name, $stamp)
     if (Test-Path -LiteralPath $zipPath) { Remove-Item -LiteralPath $zipPath -Force }
-    [System.IO.Compression.ZipFile]::CreateFromDirectory($stage, $zipPath)
+    $stageFull = (Resolve-Path -LiteralPath $stage).Path
+    $fs = [System.IO.File]::Open($zipPath, [System.IO.FileMode]::Create)
+    try {
+        $zip = New-Object System.IO.Compression.ZipArchive($fs, [System.IO.Compression.ZipArchiveMode]::Create)
+        try {
+            foreach ($item in (Get-ChildItem -LiteralPath $stageFull -Recurse -File)) {
+                $entryName = $item.FullName.Substring($stageFull.Length).TrimStart('\').Replace('\', '/')
+                [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $item.FullName, $entryName) | Out-Null
+            }
+        }
+        finally { $zip.Dispose() }
+    }
+    finally { $fs.Dispose() }
 
     $zipItem = Get-Item -LiteralPath $zipPath
     Write-Host ''
     Write-Host '[完成] 打包成功' -ForegroundColor Green
     Write-Host ("  zip      : {0}" -f $zipPath)
-    Write-Host ("  文件数   : {0}（另有 install.bat / README.txt / manifest.txt）" -f $copied)
+    Write-Host ("  文件数   : {0}（另有 install.bat / README.txt / manifest.txt / 解压提示txt）" -f $copied)
     Write-Host ("  zip 大小 : {0:N1} KB" -f ($zipItem.Length / 1KB))
     Write-Host ("  清单     : {0}" -f $manifestPath)
     Write-Host ''
-    Write-Host '下一步：将 zip 拷贝到 ecology 服务器，解压后运行 install.bat，完成后务必重启 ecology 服务。' -ForegroundColor Yellow
+    Write-Host '下一步：将 zip 拷贝到 ecology 服务器，解压到独立文件夹后运行 install.bat，完成后务必重启 ecology 服务。' -ForegroundColor Yellow
     exit 0
 }
 catch {

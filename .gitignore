@@ -1,5 +1,21 @@
 # 首跑生成的路径配置（含本机真实路径，不纳入版本控制）
 deploy-kit/deploy-config.json
 
+# 项目登记表（含真实项目名与真实路径，只留本机）
+deploy-kit/projects.md
+
 # 打包产物默认输出目录
 deploy/
+
+# 本机运行产物
+deploy-kit/logs/
+deploy-kit/_backup/
+deploy-kit/.stage-*/
+*.zip
+
+# maps\ 只放虚构样例；真实项目的清单只写在工作区副本，不进本仓库
+deploy-kit/maps/*
+!deploy-kit/maps/order-ledger-*.map
+
+# 会话交接文档：只在本机使用，不发布
+docs/交接文档.md
