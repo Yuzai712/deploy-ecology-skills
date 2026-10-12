@@ -1,0 +1,15 @@
+# 订单台账 · 增量包样例清单（纯虚构示例，只演示格式）
+# 格式：源文件相对路径(相对源根) => 压缩包内路径(相对 files/，即 ecology 根下相对路径)
+# 源根（示例）：D:\DemoRepo\out\production\OrderModule
+# 映射规则：
+#   源根下 com/xxx     -> 包内 classbean/com/xxx
+#   源根下 mobile/xxx  -> 包内 mobile/xxx
+#   源根下 WEB-INF/xxx -> 包内 WEB-INF/xxx
+# 两条易漏项：内嵌类 Xxx$Inner.class 与 .properties，存在即必列。
+# 实际使用：复制本文件改名为 maps\<项目>-fix-<日期>.map，按本轮变更文件逐行改写。
+
+com/engine/demo/order/cmd/OrderBoardCmd.class	=>	classbean/com/engine/demo/order/cmd/OrderBoardCmd.class
+com/engine/demo/order/cmd/OrderBoardCmd$Range.class	=>	classbean/com/engine/demo/order/cmd/OrderBoardCmd$Range.class
+com/engine/demo/order/util/OrderConfig.class	=>	classbean/com/engine/demo/order/util/OrderConfig.class
+com/web/config/order-config.properties	=>	classbean/com/web/config/order-config.properties
+mobile/plugin/orderBoard/orderBoard.jsp	=>	mobile/plugin/orderBoard/orderBoard.jsp

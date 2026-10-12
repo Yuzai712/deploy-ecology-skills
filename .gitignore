@@ -1,0 +1,5 @@
+# 首跑生成的路径配置（含本机真实路径，不纳入版本控制）
+deploy-kit/deploy-config.json
+
+# 打包产物默认输出目录
+deploy/
